@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -14,10 +15,19 @@
     "jest",
     "requirejs"
   ],
-  "author": "sterpe@rubiconproject.com",
-  "license": "SEE LICENSE IN LICENSE.md",
+  "author": "srterpe@icloud.com",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/sterpe/jest-requirejs/issues"
   },
-  "homepage": "https://github.com/sterpe/jest-requirejs#readme"
+  "homepage": "https://github.com/sterpe/jest-requirejs#readme",
+  "devDependencies": {
+    "eslint": "^1.7.1",
+    "jest-cli": "^0.5.10"
+  },
+  "dependencies": {
+    "escodegen": "^1.7.0",
+    "esprima": "^2.6.0",
+    "estraverse": "^4.1.0"
+  }
 }
