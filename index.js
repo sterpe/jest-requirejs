@@ -28,7 +28,7 @@ function requirejsResolutionProcedure(requirejs, requireArgumentValue) {
 	);
 
 }
-function evaluateNode(node, value) {
+function evaluateNode(requirejs, node, value) {
 	let requireArgumentValue = node.arguments[0].value;
 
 	// If the module ID includes a protocol, starts with `/` or ends in `.js`
@@ -77,7 +77,7 @@ module.exports = function (config) {
 							node.callee.type === "Identifier" &&
 							node.callee.name === "require") {
 						if (node.arguments[0].type === "Literal") {
-							return evaluateNode(node,
+							return evaluateNode(requirejs, node,
 								node.arguments[0].value);
 						}
 					}
