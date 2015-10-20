@@ -28,6 +28,32 @@ function requirejsResolutionProcedure(requirejs, requireArgumentValue) {
 	);
 
 }
+function evaluateNode(node, value) {
+	let requireArgumentValue = node.arguments[0].value;
+
+	// If the module ID includes a protocol, starts with `/` or ends in `.js`
+	// the given require path is relative to the current webRoot.
+	if (/\:/.test(requireArgumentValue) || /^\//.test(requireArgumentValue) || /\.js$/.test(requireArgumentValue)) {
+		node.arguments[0].value = path.resolve(requirejs.webRoot
+			, requireArgumentValue
+		);
+		return node;
+	}
+	// Ignoring some of the wackier resolution features of requirejs, 
+	// relative paths should be relative to the current file,
+	// though there are some caveats to this that should be implemented later
+	if (/^\.(\.)?\/.*$/.test(node.arguments[0].value)) {
+		node.arguments[0].value = path.resolve(path.dirname(filename),
+			node.arguments[0].value);
+		return node;
+	}
+	if (/\!/.test(requireArgumentValue)) {
+		// This is a loader directive
+		return node;
+	}
+	node.arguments[0].value = requirejsResolutionProcedure(requirejs, requireArgumentValue);
+	return node;
+}
 module.exports = function (config) {
 
 	const requirejs = require('./lib/requirejs')(config.mainjs, config.indexHtml);
@@ -51,30 +77,8 @@ module.exports = function (config) {
 							node.callee.type === "Identifier" &&
 							node.callee.name === "require") {
 						if (node.arguments[0].type === "Literal") {
-							let requireArgumentValue = node.arguments[0].value;
-
-							// If the module ID includes a protocol, starts with `/` or ends in `.js`
-							// the given require path is relative to the current webRoot.
-							if (/\:/.test(requireArgumentValue) || /^\//.test(requireArgumentValue) || /\.js$/.test(requireArgumentValue)) {
-								node.arguments[0].value = path.resolve(requirejs.webRoot
-									, requireArgumentValue
-								);
-								return node;
-							}
-							// Ignoring some of the wackier resolution features of requirejs, 
-							// relative paths should be relative to the current file,
-							// though there are some caveats to this that should be implemented later
-							if (/^\.(\.)?\/.*$/.test(node.arguments[0].value)) {
-								node.arguments[0].value = path.resolve(path.dirname(filename),
-									node.arguments[0].value);
-								return node;
-							}
-							if (/\!/.test(requireArgumentValue)) {
-								// This is a loader directive
-								return node;
-							}
-							node.arguments[0].value = requirejsResolutionProcedure(requirejs, requireArgumentValue);
-							return node;
+							return evaluateNode(node,
+								node.arguments[0].value);
 						}
 					}
 				}
