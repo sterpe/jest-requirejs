@@ -21,6 +21,7 @@ function requirejsResolutionProcedure(requirejs, requireArgumentValue) {
 			break;
 		}
 	}
+	console.log("KEY", key);
 	return path.resolve(requirejs.dirname
 		, requirejs.config.baseUrl
 		, key ? requireArgumentValue.replace(key, paths[key]) :
@@ -28,7 +29,7 @@ function requirejsResolutionProcedure(requirejs, requireArgumentValue) {
 	);
 
 }
-function evaluateNode(requirejs, node, value) {
+function evaluateNode(requirejs, filename, node, value) {
 	let requireArgumentValue = node.arguments[0].value;
 
 	// If the module ID includes a protocol, starts with `/` or ends in `.js`
@@ -77,7 +78,7 @@ module.exports = function (config) {
 							node.callee.type === "Identifier" &&
 							node.callee.name === "require") {
 						if (node.arguments[0].type === "Literal") {
-							return evaluateNode(requirejs, node,
+							return evaluateNode(requirejs, filename, node,
 								node.arguments[0].value);
 						}
 					}
